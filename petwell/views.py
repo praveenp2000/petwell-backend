@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 
 from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
-from petwell.serializer import CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetserviceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
+from petwell.serializer import CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
 from petwell.serializer import CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
 
 # Create your views here.
@@ -329,7 +329,7 @@ def getallpetserviceApi(request,id=0):
 
         # Fetch all customer records
         petservice = Petservice.objects.all()
-        total_records = pet.count()
+        total_records = petservice.count()
 
         # Apply pagination
         paginator = Paginator(petservice, page_size)

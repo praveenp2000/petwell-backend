@@ -51,6 +51,7 @@ class Adoption(models.Model):
     description = models.CharField(max_length=650,null=True)
     image = models.CharField(max_length=300)
     gender = models.CharField(max_length=300)
+    adopted = models.BooleanField(default=False)
 
 class Booking(models.Model):
     bid = models.AutoField(primary_key=True)    
@@ -90,7 +91,7 @@ class Product(models.Model):
     animal = models.CharField(max_length=300)
     producttype = models.CharField(max_length=300)
     rating = models.IntegerField()
-    aproved = models.BooleanField(default=False)
+    approved = models.BooleanField(default=False)
 
 class Purchase(models.Model):
     purchaseid = models.AutoField(primary_key=True)
