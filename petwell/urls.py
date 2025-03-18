@@ -76,6 +76,7 @@ urlpatterns = [
     path('editproduct/',views.editproductApi), 
     path('getallproduct/',views.getallproductApi),
     re_path('getproductbyid/([0-9]+)$',views.getproductbyidApi),
+    re_path('getproductbysellerid/([0-9]+)$',views.getproductbysellerApi),
 
 
     # path('addpurchase/',views.addpurchaseApi),

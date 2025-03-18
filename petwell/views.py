@@ -22,7 +22,12 @@ def customerloginApi(request,id=0):
             if Customer.objects.filter(email=customer_data['email']).exists():
                 customer = Customer.objects.get(email=customer_data['email'])
                 if customer.password==customer_data['password']:
-                    return JsonResponse({"status": "success","message":"Login successfull"},status=200,safe=False)
+                    info = {
+                        "cid": customer.cid,
+                        "name": customer.name,
+                        "email": customer.email,
+                    }
+                    return JsonResponse({"status": "success","message":"Login successfull","data":info},status=200,safe=False)
                 else:
                     return JsonResponse({"status": "failed","message":"Wrong Password"},status=200,safe=False)
             else:
@@ -37,7 +42,12 @@ def doctorloginApi(request,id=0):
             if Doctor.objects.filter(email=doctor_data['email']).exists():
                 doctor = Doctor.objects.get(email=doctor_data['email'])
                 if doctor.password==doctor_data['password']:
-                    return JsonResponse({"status": "success","message":"Login successfull"},status=200,safe=False)
+                    info = {
+                        "doctorid": doctor.doctorid,
+                        "name": doctor.name,
+                        "email": doctor.email,
+                    }
+                    return JsonResponse({"status": "success","message":"Login successfull","data":info},status=200,safe=False)
                 else:
                     return JsonResponse({"status": "failed","message":"Wrong Password"},status=200,safe=False)
             else:
@@ -52,7 +62,12 @@ def adminloginApi(request,id=0):
             if Admin.objects.filter(email=admin_data['email']).exists():
                 admin = Admin.objects.get(email=admin_data['email'])
                 if admin.password==admin_data['password']:
-                    return JsonResponse({"status": "success","message":"Login successfull"},status=200,safe=False)
+                    admin_info = {
+                        "aid": admin.aid,
+                        "name": admin.name,
+                        "email": admin.email,
+                    }
+                    return JsonResponse({"status": "success","message":"Login successfull","data":admin_info},status=200,safe=False)
                 else:
                     return JsonResponse({"status": "failed","message":"Wrong Password"},status=200,safe=False)
             else:
@@ -67,11 +82,17 @@ def sellerloginApi(request,id=0):
             if Seller.objects.filter(email=seller_data['email']).exists():
                 seller = Seller.objects.get(email=seller_data['email'])
                 if seller.password==seller_data['password']:
-                    return JsonResponse({"status": "success","message":"Login successfull"},status=200,safe=False)
+                    info = {
+                        "sid": seller.sid,
+                        "name": seller.name,
+                        "email": seller.email,
+                    }
+                    return JsonResponse({"status": "success","message":"Login successfull", "data":info },status=200,safe=False)
                 else:
                     return JsonResponse({"status": "failed","message":"Wrong Password"},status=200,safe=False)
             else:
                 return JsonResponse({"status": "failed","message":"Wrong Id"},status=200,safe=False)
+        else:  print('serializer not valid')
 
 @csrf_exempt
 def customerregisterApi(request,id=0):
@@ -510,7 +531,32 @@ def getproductbyidApi(request,id=0):
     if request.method=='GET':
         product = Product.objects.get(productid=id)
         product_serializer = ProductSerializer(product)
-        return JsonResponse(product_serializer.data, safe=False) 
+        return JsonResponse(product_serializer.data, safe=False)
+
+@csrf_exempt
+def getproductbysellerApi(request,id=0):
+    data = json.loads(request.body)
+    current_page = int(data.get("current_page", 1))  # Default to page 1
+    page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+
+    # Fetch all customer records
+    product = Product.objects.filter(seller_id=id)
+    total_records = product.count()
+
+    # Apply pagination
+    paginator = Paginator(product, page_size)
+    paginated_data = paginator.get_page(current_page)
+
+    # Serialize paginated customer data
+    product_serializer = ProductSerializer(paginated_data, many=True)
+
+    return JsonResponse({
+        "data": product_serializer.data,  # Customer records
+        "total_records": total_records,  # Total customer count
+        "page_size": page_size,  # Number of items per page
+        "current_page": current_page  # Current requested page
+    }, safe=False)
+ 
 
 
 @csrf_exempt
@@ -542,7 +588,7 @@ def getpurchasebyidApi(request,id=0):
     if request.method=='GET':
         purchase = Purchase.objects.get(purchaseid=id)
         purchase_serializer = PurchaseSerializer(purchase)
-        return JsonResponse(purchase_serializer.data, safe=False) 
+        return JsonResponse(purchase_serializer.data, safe=False)
 
 
 @csrf_exempt

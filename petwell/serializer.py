@@ -131,7 +131,7 @@ class SellerSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('productid','name','price','quantity','animal','producttype','rating','approved')
+        fields = ('productid','seller_id','name','price','quantity','animal','producttype','rating','approved')
 
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
