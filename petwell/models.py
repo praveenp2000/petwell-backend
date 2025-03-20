@@ -49,7 +49,7 @@ class Adoption(models.Model):
     color = models.CharField(max_length=300)
     age = models.IntegerField()
     description = models.CharField(max_length=650,null=True)
-    image = models.CharField(max_length=300)
+    image = models.ImageField(upload_to='pics')
     gender = models.CharField(max_length=300)
     adopted = models.BooleanField(default=False)
 
@@ -92,6 +92,7 @@ class Product(models.Model):
     producttype = models.CharField(max_length=300)
     rating = models.IntegerField()
     approved = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='pics')
 
 class Purchase(models.Model):
     purchaseid = models.AutoField(primary_key=True)
