@@ -148,6 +148,27 @@ def sellerregisterApi(request,id=0):
 
 
 @csrf_exempt
+def addProductApi(request,id=0):
+    if request.method=='POST':
+        data = JSONParser().parse(request)
+        serializer = ProductSerializer(data={
+            "seller_id":request.data.get("seller_id"),
+            "name":request.data.get("name"),
+            "price":request.data.get("price"),
+            "quantity":request.data.get("quantity"),
+            "animal":request.data.get("animal"),
+            "producttype":request.data.get("producttype"),
+            "rating":request.data.get("rating"),
+            "approved":request.data.get("approved"),
+            "image":request.FILES.get("image"),
+ 
+        })
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Added successfully", safe=False)
+        
+
+@csrf_exempt
 def editcustomerApi(request,id=0):
     if request.method=='PUT':
         customer_data = JSONParser().parse(request)
