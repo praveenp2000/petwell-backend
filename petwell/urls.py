@@ -70,6 +70,7 @@ urlpatterns = [
     path('editseller/',views.editsellerApi), 
     path('getallseller/',views.getallsellerApi),
     re_path('getsellerbyid/([0-9]+)$',views.getsellerbyidApi),
+    re_path('getallpurchasesofseller/([0-9]+)$',views.getAllPurchasesOfSellerApi),
 
 
     path('addproduct/',views.addProductApi),

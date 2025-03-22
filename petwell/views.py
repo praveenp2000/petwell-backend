@@ -6,10 +6,11 @@ from django.core.files.storage import default_storage
 from rest_framework.utils import json
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
+from django.db.models import Sum
 
 from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
 from petwell.serializer import CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
-from petwell.serializer import CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
+from petwell.serializer import AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
 
 # Create your views here.
 
@@ -150,23 +151,33 @@ def sellerregisterApi(request,id=0):
 @csrf_exempt
 def addProductApi(request,id=0):
     if request.method=='POST':
-        data = JSONParser().parse(request)
-        serializer = ProductSerializer(data={
-            "seller_id":request.data.get("seller_id"),
-            "name":request.data.get("name"),
-            "price":request.data.get("price"),
-            "quantity":request.data.get("quantity"),
-            "animal":request.data.get("animal"),
-            "producttype":request.data.get("producttype"),
-            "rating":request.data.get("rating"),
-            "approved":request.data.get("approved"),
+        serializer = AddProductSerializer(data={
+            "seller_id":request.POST.get("seller_id"),
+            "name":request.POST.get("name"),
+            "price":request.POST.get("price"),
+            "quantity":request.POST.get("quantity"),
+            "animal":request.POST.get("animal"),
+            "producttype":request.POST.get("producttype"),
+            "rating":request.POST.get("rating"),
+            "approved":request.POST.get("approved"),
             "image":request.FILES.get("image"),
- 
         })
         if serializer.is_valid():
             serializer.save()
             return JsonResponse("Added successfully", safe=False)
-        
+
+@csrf_exempt
+def getAllPurchasesOfSellerApi(request, seller_id):
+    purchase_count = Purchase.objects.filter(product_id__seller_id=seller_id).count()
+    customer_count = Purchase.objects.filter(product_id__seller_id=seller_id).values('customer_id').distinct().count()
+    total_revenue = Purchase.objects.filter(product_id__seller_id=seller_id, paid=True).aggregate(revenue=Sum('product_id__price'))['revenue']
+    return JsonResponse({
+        "seller_id": seller_id,
+        "total_purchases": purchase_count,
+        "total_customers": customer_count,
+        "total_revenue": total_revenue
+    })
+
 
 @csrf_exempt
 def editcustomerApi(request,id=0):

@@ -128,6 +128,11 @@ class SellerSerializer(serializers.ModelSerializer):
         model = Seller
         fields = ('sid','name','email','password')
 
+class AddProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('image','name','price','seller_id','quantity','animal','producttype','rating','approved')
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
