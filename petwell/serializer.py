@@ -91,12 +91,12 @@ class EditSellerSerializer(serializers.ModelSerializer):
 class EditProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('name','price','quantity','animal','producttype','rating','approved')
+        fields = ('name','price','quantity','animal','producttype','rating','approved','productid')
         
 class EditPurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purchase
-        fields = ('date','paid','delivery_status')
+        fields = ('date','payed','delivery_status')
 
 class PetSerializer(serializers.ModelSerializer):
     class Meta:
@@ -136,17 +136,17 @@ class AddProductSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('image','name','price','quantity','animal','producttype','rating','approved')
+        fields = ('image','productid','name','price','quantity','animal','producttype','rating','approved')
 
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purchase
-        fields = ('purchaseid','date','paid','delivery_status','product_id','customer_id')
+        fields = ('purchaseid','date','payed','delivery_status','product_id','customer_id')
 
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purchase
-        fields = ('purchaseid','date','paid','delivery_status','product_id','customer_id')      
+        fields = ('purchaseid','date','payed','delivery_status','product_id','customer_id')      
 
 class PetServiceSerializer(serializers.ModelSerializer):
     class Meta:

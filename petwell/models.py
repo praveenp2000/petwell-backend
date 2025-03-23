@@ -97,7 +97,7 @@ class Product(models.Model):
 class Purchase(models.Model):
     purchaseid = models.AutoField(primary_key=True)
     date = models.DateTimeField()
-    paid = models.BooleanField(default=False)
+    payed = models.BooleanField(default=False)
     delivery_status = models.CharField(max_length=300)
     product_id = models.ForeignKey(Product,default=1,on_delete=models.DO_NOTHING)
     customer_id = models.ForeignKey(Customer,default=1,on_delete=models.DO_NOTHING)

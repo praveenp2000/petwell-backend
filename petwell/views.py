@@ -170,7 +170,7 @@ def addProductApi(request,id=0):
 def getAllPurchasesOfSellerApi(request, seller_id):
     purchase_count = Purchase.objects.filter(product_id__seller_id=seller_id).count()
     customer_count = Purchase.objects.filter(product_id__seller_id=seller_id).values('customer_id').distinct().count()
-    total_revenue = Purchase.objects.filter(product_id__seller_id=seller_id, paid=True).aggregate(revenue=Sum('product_id__price'))['revenue']
+    total_revenue = Purchase.objects.filter(product_id__seller_id=seller_id, payed=True).aggregate(revenue=Sum('product_id__price'))['revenue']
     return JsonResponse({
         "seller_id": seller_id,
         "total_purchases": purchase_count,
@@ -598,7 +598,7 @@ def getallproductApi(request,id=0):
         page_size = int(data.get("page_size", 10))  # Default to 10 items per page
 
         # Fetch all customer records
-        product = Product.objects.all()
+        product = Product.objects.all().order_by('approved')
         total_records = product.count()
 
         # Apply pagination
@@ -614,6 +614,34 @@ def getallproductApi(request,id=0):
             "page_size": page_size,  # Number of items per page
             "current_page": current_page  # Current requested page
         }, safe=False)
+
+
+@csrf_exempt
+def getapprovedproductApi(request,id=0):
+        data = json.loads(request.body)
+        current_page = int(data.get("current_page", 1))  # Default to page 1
+        page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+
+        # Fetch all customer records
+        product = Product.objects.all().filter(approved=True)
+        total_records = product.count()
+
+        # Apply pagination
+        paginator = Paginator(product, page_size)
+        paginated_data = paginator.get_page(current_page)
+
+        # Serialize paginated customer data
+        product_serializer = ProductSerializer(paginated_data, many=True)
+
+        return JsonResponse({
+            "data": product_serializer.data,  # Customer records
+            "total_records": total_records,  # Total customer count
+            "page_size": page_size,  # Number of items per page
+            "current_page": current_page  # Current requested page
+        }, safe=False)
+
+
+
 
 @csrf_exempt
 def getpurchasebyidApi(request,id=0):
