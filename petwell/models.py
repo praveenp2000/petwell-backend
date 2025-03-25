@@ -58,9 +58,10 @@ class Booking(models.Model):
     doctor_id = models.ForeignKey(Doctor,default=1,on_delete=models.DO_NOTHING)
     customer_id =  models.ForeignKey(Customer,default=1,on_delete=models.DO_NOTHING)
     pet_id =  models.ForeignKey(Pet,default=1,on_delete=models.DO_NOTHING)
-    date = models.DateTimeField()
+    date = models.CharField(max_length=650,null=True)
     slot = models.CharField(max_length=300)
     booking_type = models.CharField(max_length=300)
+    booked_for = models.CharField(max_length=300)
 
 class Health(models.Model):
     hid = models.AutoField(primary_key=True) 

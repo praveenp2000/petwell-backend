@@ -7,12 +7,24 @@ from rest_framework.utils import json
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Sum
+import json
 
 from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
 from petwell.serializer import CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
-from petwell.serializer import AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
+from petwell.serializer import AddBookingSerializer,AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
 
 # Create your views here.
+
+ALL_SLOTS = [
+    "09:00 AM - 10:00 AM",
+    "10:00 AM - 11:00 AM",
+    "11:00 AM - 12:00 PM",
+    "01:00 PM - 02:00 PM",
+    "02:00 PM - 03:00 PM",
+    "03:00 PM - 04:00 PM",
+    "04:00 PM - 05:00 PM",
+    "05:00 PM - 06:00 PM",
+]
 
 @csrf_exempt
 def customerloginApi(request,id=0):
@@ -254,6 +266,34 @@ def editadoptionApi(request,id=0):
         else:
             return JsonResponse("Failed to Update",safe=False)
 
+
+@csrf_exempt
+def addbookingApi(request,id=0):
+    if request.method=='POST':
+        b_data = JSONParser().parse(request)
+        b_serializer = AddBookingSerializer(data=b_data)
+        if b_serializer.is_valid():
+            b_serializer.save()
+            if b_serializer.save():
+                return JsonResponse("Added successfully", safe=False)
+        else:
+            return JsonResponse("Not a valid serializer",safe=False)
+
+@csrf_exempt
+def getAvailableSlots(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            date = data.get("date")  
+            booking_type = data.get("booking_type")
+            if not date or not booking_type:
+                return JsonResponse({"error": "Date is required"}, status=400)
+            booked_slots = Booking.objects.filter(date=date, booking_type=booking_type).values_list("slot", flat=True)
+            available_slots = [slot for slot in ALL_SLOTS if slot not in booked_slots]
+            return JsonResponse({"date": date, "available_slots": available_slots}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+
 @csrf_exempt
 def editbookingApi(request,id=0):
     if request.method=='PUT':
@@ -475,13 +515,18 @@ def getallbookingApi(request,id=0):
         data = json.loads(request.body)
         current_page = int(data.get("current_page", 1))  # Default to page 1
         page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+        customer_id = data.get("customer_id", None)  # Get customer_id if provided
 
-        # Fetch all customer records
-        booking = Booking.objects.all()
-        total_records = booking.count()
+        # Filter bookings by customer_id if provided
+        if customer_id:
+            bookings = Booking.objects.filter(customer_id=customer_id)
+        else:
+            bookings = Booking.objects.all()
+
+        total_records = bookings.count()
 
         # Apply pagination
-        paginator = Paginator(booking, page_size)
+        paginator = Paginator(bookings, page_size)
         paginated_data = paginator.get_page(current_page)
 
         # Serialize paginated customer data
@@ -682,6 +727,12 @@ def getpetbyidApi(request,id=0):
         pet_serializer = PetSerializer(pet)
         return JsonResponse(pet_serializer.data, safe=False) 
 
+@csrf_exempt
+def getcustomerpetsApi(request,id=0):
+    if request.method=='GET':
+        pet = Pet.objects.filter(customer_id=id)
+        pet_serializer = PetSerializer(pet, many=True)
+        return JsonResponse(pet_serializer.data, safe=False) 
 
 @csrf_exempt
 def getallpetApi(request,id=0):
