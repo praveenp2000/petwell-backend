@@ -116,7 +116,7 @@ class AdoptionSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ('bid','slot','date','booking_type','booked_for')
+        fields = ('bid','slot','date','booking_type','booked_for','pet_id')
 
 class AddBookingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -126,7 +126,12 @@ class AddBookingSerializer(serializers.ModelSerializer):
 class HealthSerializer(serializers.ModelSerializer):
     class Meta:
         model = Health
-        fields = ('hid','description','date','prescription')
+        fields = ('hid','customer_id','pet_id','description','date','prescription')
+
+class AddHealthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Health
+        fields = ('customer_id','pet_id','description','date','prescription')
 
 class SellerSerializer(serializers.ModelSerializer):
     class Meta:

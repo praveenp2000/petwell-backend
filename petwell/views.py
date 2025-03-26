@@ -10,7 +10,7 @@ from django.db.models import Sum
 import json
 
 from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
-from petwell.serializer import CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
+from petwell.serializer import AddHealthSerializer,CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
 from petwell.serializer import AddBookingSerializer,AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
 
 # Create your views here.
@@ -279,6 +279,21 @@ def addbookingApi(request,id=0):
         else:
             return JsonResponse("Not a valid serializer",safe=False)
 
+
+
+@csrf_exempt
+def addhealthApi(request,id=0):
+    if request.method=='POST':
+        b_data = JSONParser().parse(request)
+        b_serializer = AddHealthSerializer(data=b_data)
+        if b_serializer.is_valid():
+            b_serializer.save()
+            if b_serializer.save():
+                return JsonResponse("Added successfully", safe=False)
+        else:
+            return JsonResponse("Not a valid serializer",safe=False)
+
+
 @csrf_exempt
 def getAvailableSlots(request):
     if request.method == "POST":
@@ -305,6 +320,68 @@ def editbookingApi(request,id=0):
             return JsonResponse("Update successfully", safe=False)
         else:
             return JsonResponse("Failed to Update",safe=False)
+
+@csrf_exempt
+def getbookingbyidApi(request,id=0):
+    if request.method=='GET':
+        booking = Booking.objects.get(bid=id)
+        booking_serializer = BookingSerializer(booking)
+        return JsonResponse(booking_serializer.data, safe=False) 
+
+
+@csrf_exempt
+def getallbookingApi(request,id=0):
+        data = json.loads(request.body)
+        current_page = int(data.get("current_page", 1))  # Default to page 1
+        page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+        customer_id = data.get("customer_id", None)  # Get customer_id if provided
+
+        # Filter bookings by customer_id if provided
+        if customer_id:
+            bookings = Booking.objects.filter(customer_id=customer_id)
+        else:
+            bookings = Booking.objects.all()
+
+        total_records = bookings.count()
+
+        # Apply pagination
+        paginator = Paginator(bookings, page_size)
+        paginated_data = paginator.get_page(current_page)
+
+        # Serialize paginated customer data
+        booking_serializer = BookingSerializer(paginated_data, many=True)
+
+        return JsonResponse({
+            "data": booking_serializer.data,  # Customer records
+            "total_records": total_records,  # Total customer count
+            "page_size": page_size,  # Number of items per page
+            "current_page": current_page  # Current requested page
+        }, safe=False)
+
+
+
+@csrf_exempt
+def getallbookingbyDocIdAndDateApi(request,id=0):
+        data = json.loads(request.body)
+        doctor_id = int(data.get("doctor_id")) 
+        date = data.get("date", None)  
+
+        if doctor_id:
+            bookings = Booking.objects.filter(doctor_id=doctor_id, date=date)
+            booking_serializer = BookingSerializer(bookings, many=True)
+            return JsonResponse({
+                "data": booking_serializer.data, 
+            }, safe=False)
+
+
+
+@csrf_exempt
+def getBookingByDoctorIdApi(request,id=0):
+    if request.method=='GET':
+        booking = Booking.objects.filter(doctor_id=id)
+        booking_serializer = BookingSerializer(booking,many=True)
+        return JsonResponse(booking_serializer.data, safe=False) 
+
 
 @csrf_exempt
 def edithealthApi(request,id=0):
@@ -503,43 +580,6 @@ def getalladoptionApi(request,id=0):
         }, safe=False)
 
 @csrf_exempt
-def getbookingbyidApi(request,id=0):
-    if request.method=='GET':
-        booking = Booking.objects.get(bid=id)
-        booking_serializer = BookingSerializer(booking)
-        return JsonResponse(booking_serializer.data, safe=False) 
-
-
-@csrf_exempt
-def getallbookingApi(request,id=0):
-        data = json.loads(request.body)
-        current_page = int(data.get("current_page", 1))  # Default to page 1
-        page_size = int(data.get("page_size", 10))  # Default to 10 items per page
-        customer_id = data.get("customer_id", None)  # Get customer_id if provided
-
-        # Filter bookings by customer_id if provided
-        if customer_id:
-            bookings = Booking.objects.filter(customer_id=customer_id)
-        else:
-            bookings = Booking.objects.all()
-
-        total_records = bookings.count()
-
-        # Apply pagination
-        paginator = Paginator(bookings, page_size)
-        paginated_data = paginator.get_page(current_page)
-
-        # Serialize paginated customer data
-        booking_serializer = BookingSerializer(paginated_data, many=True)
-
-        return JsonResponse({
-            "data": booking_serializer.data,  # Customer records
-            "total_records": total_records,  # Total customer count
-            "page_size": page_size,  # Number of items per page
-            "current_page": current_page  # Current requested page
-        }, safe=False)
-
-@csrf_exempt
 def gethealthbyidApi(request,id=0):
     if request.method=='GET':
         health = Health.objects.get(hid=id)
@@ -725,7 +765,15 @@ def getpetbyidApi(request,id=0):
     if request.method=='GET':
         pet = Pet.objects.get(petid=id)
         pet_serializer = PetSerializer(pet)
-        return JsonResponse(pet_serializer.data, safe=False) 
+        return JsonResponse(pet_serializer.data, safe=False)
+
+@csrf_exempt
+def getcustomerIdFromPetId(request,id=0):
+    if request.method=='GET':
+        pet = Pet.objects.get(petid=id)  # Ensure petid is the correct field name
+        cid = pet.customer_id.cid
+        return JsonResponse({"cid": cid}, safe=False)
+
 
 @csrf_exempt
 def getcustomerpetsApi(request,id=0):

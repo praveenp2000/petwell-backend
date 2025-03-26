@@ -25,6 +25,8 @@ urlpatterns = [
     path('getallpet/',views.getallpetApi),
     re_path('getcustomerpets/([0-9]+)$',views.getcustomerpetsApi),
     re_path('getpetbyid/([0-9]+)$',views.getpetbyidApi),
+    re_path('getcustomeridfrompetid/([0-9]+)$',views.getcustomerIdFromPetId),
+    
 
     path('editdoctor/',views.editdoctorApi), 
     re_path('getdoctorbyid/([0-9]+)$',views.getdoctorbyidApi),
@@ -49,9 +51,11 @@ urlpatterns = [
     path('getallbooking/',views.getallbookingApi),
     re_path('getbookingbyid/([0-9]+)$',views.getbookingbyidApi),
     path('getavailableslots/',views.getAvailableSlots),
+    re_path('getbookingbydoctorid/([0-9]+)$',views.getBookingByDoctorIdApi),
+    path('getallbookingbydoctoridanddate/',views.getallbookingbyDocIdAndDateApi),
     
 
-    # path('addhealth/',views.addhealthApi),
+    path('addhealth/',views.addhealthApi),
     path('edithealth/',views.edithealthApi), 
     path('getallhealth/',views.getallhealthApi),
     re_path('gethealthbyid/([0-9]+)$',views.gethealthbyidApi),
