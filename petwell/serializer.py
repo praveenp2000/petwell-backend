@@ -111,7 +111,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 class AdoptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Adoption
-        fields = ('aid','breed','animal','color','age','description','image','gender')
+        fields = ('aid','breed','animal','color','age','description','image','gender','phone')
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -162,3 +162,8 @@ class PetServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Petservice
         fields = ('pserviceid','status','customer_id','pet_id','service_id')  
+
+class CustomerChangePasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields =('cid','password',)

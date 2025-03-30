@@ -52,6 +52,7 @@ class Adoption(models.Model):
     image = models.ImageField(upload_to='pics')
     gender = models.CharField(max_length=300)
     adopted = models.BooleanField(default=False)
+    phone = models.CharField(max_length=300,null=True)
 
 class Booking(models.Model):
     bid = models.AutoField(primary_key=True)    
@@ -67,7 +68,7 @@ class Health(models.Model):
     hid = models.AutoField(primary_key=True) 
     pet_id =  models.ForeignKey(Pet,default=1,on_delete=models.DO_NOTHING)
     customer_id =  models.ForeignKey(Customer,default=1,on_delete=models.DO_NOTHING)
-    date = models.DateTimeField()
+    date = models.CharField(max_length=650,null=True)
     description = models.CharField(max_length=650,null=True)
     prescription = models.CharField(max_length=650,null=True)
 

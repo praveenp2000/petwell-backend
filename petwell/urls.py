@@ -10,6 +10,9 @@ urlpatterns = [
     path('doctorlogin/',views.doctorloginApi),
     path('adminlogin/',views.adminloginApi),
     path('sellerlogin/',views.sellerloginApi),
+    path('changecustomerpasswordapi/',views.changepasswordApi),
+
+    
 
     path('customerregister/',views.customerregisterApi),
     path('doctorregister/',views.doctorregisterApi),
@@ -23,7 +26,7 @@ urlpatterns = [
     # path('addpet/',views.addpetApi),
     path('editpet/',views.editpetApi), 
     path('getallpet/',views.getallpetApi),
-    re_path('getcustomerpets/([0-9]+)$',views.getcustomerpetsApi),
+    path('getcustomerpets/',views.getcustomerpetsApi),
     re_path('getpetbyid/([0-9]+)$',views.getpetbyidApi),
     re_path('getcustomeridfrompetid/([0-9]+)$',views.getcustomerIdFromPetId),
     
@@ -59,6 +62,7 @@ urlpatterns = [
     path('edithealth/',views.edithealthApi), 
     path('getallhealth/',views.getallhealthApi),
     re_path('gethealthbyid/([0-9]+)$',views.gethealthbyidApi),
+    re_path('gethealthbypetId/([0-9]+)$',views.gethealthbyPetIdApi),
 
     # path('addseller/',views.addsellerApi),
     path('editseller/',views.editsellerApi), 

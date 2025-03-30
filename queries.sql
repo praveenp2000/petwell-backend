@@ -24,7 +24,7 @@ INSERT INTO petwell_pet (name, age, gender, animal, breed, color, customer_id_id
 ('Venece', 4, 'Female', 'Dog', 'Golden Retriever', 'Golden', 10);
 
 INSERT INTO petwell_doctor (name, phone, qualification, email, password) VALUES
-('Dr. Smith', '1112223333', 'DVM', ' ', 'docpass1'),
+('Dr. Smith', '1112223333', 'DVM', 'drsmith@example.com', 'docpass1'),
 ('Dr. Johnson', '2223334444', 'DVM', 'drjohnson@example.com', 'docpass2'),
 ('Dr. Brown', '3334445555', 'DVM', 'drbrown@example.com', 'docpass3'),
 ('Dr. Green', '4445556666', 'DVM', 'drgreen@example.com', 'docpass4'),

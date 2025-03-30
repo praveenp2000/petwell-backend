@@ -11,7 +11,7 @@ import json
 
 from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
 from petwell.serializer import AddHealthSerializer,CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
-from petwell.serializer import AddBookingSerializer,AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
+from petwell.serializer import CustomerChangePasswordSerializer,AddBookingSerializer,AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
 
 # Create your views here.
 
@@ -106,6 +106,25 @@ def sellerloginApi(request,id=0):
             else:
                 return JsonResponse({"status": "failed","message":"Wrong Id"},status=200,safe=False)
         else:  print('serializer not valid')
+
+
+@csrf_exempt
+def changepasswordApi(request,id=0):
+    if request.method=='PUT':
+        data = JSONParser().parse(request)
+        if Customer.objects.filter(cid=data['user_id']).exists():
+            changep = Customer.objects.get(cid=data['user_id'])
+            if data['current_password'] == changep.password:
+                changepserializer = CustomerChangePasswordSerializer(changep,data=data)
+                print('lol',changepserializer)
+                if changepserializer.is_valid():
+                    changepserializer.save()
+                    return JsonResponse("Password Changed", safe=False)
+                else:
+                    return JsonResponse("Failed to Update",safe=False)
+            else:
+                return JsonResponse("Enter Correct Password",safe=False)
+
 
 @csrf_exempt
 def customerregisterApi(request,id=0):
@@ -284,11 +303,13 @@ def addbookingApi(request,id=0):
 @csrf_exempt
 def addhealthApi(request,id=0):
     if request.method=='POST':
-        b_data = JSONParser().parse(request)
-        b_serializer = AddHealthSerializer(data=b_data)
-        if b_serializer.is_valid():
-            b_serializer.save()
-            if b_serializer.save():
+        h_data = JSONParser().parse(request)
+        print('data',h_data)
+        h_serializer = AddHealthSerializer(data=h_data)
+        print('serializer',h_serializer)
+        if h_serializer.is_valid():
+            h_serializer.save()
+            if h_serializer.save():
                 return JsonResponse("Added successfully", safe=False)
         else:
             return JsonResponse("Not a valid serializer",safe=False)
@@ -554,6 +575,7 @@ def getadoptionbyidApi(request,id=0):
         adoption_serializer = AdoptionSerializer(adoption)
         return JsonResponse(adoption_serializer.data, safe=False) 
 
+# getallpetApi getcustomerpetsApi
 
 @csrf_exempt
 def getalladoptionApi(request,id=0):
@@ -584,6 +606,13 @@ def gethealthbyidApi(request,id=0):
     if request.method=='GET':
         health = Health.objects.get(hid=id)
         health_serializer = HealthSerializer(pet)
+        return JsonResponse(health_serializer.data, safe=False) 
+
+@csrf_exempt
+def gethealthbyPetIdApi(request,id=0):
+    if request.method=='GET':
+        health = Health.objects.filter(pet_id=id)
+        health_serializer = HealthSerializer(health,many=True)
         return JsonResponse(health_serializer.data, safe=False) 
 
 
@@ -775,12 +804,12 @@ def getcustomerIdFromPetId(request,id=0):
         return JsonResponse({"cid": cid}, safe=False)
 
 
-@csrf_exempt
-def getcustomerpetsApi(request,id=0):
-    if request.method=='GET':
-        pet = Pet.objects.filter(customer_id=id)
-        pet_serializer = PetSerializer(pet, many=True)
-        return JsonResponse(pet_serializer.data, safe=False) 
+# @csrf_exempt
+# def getcustomerpetsApi(request,id=0):
+#     if request.method=='GET':
+#         pet = Pet.objects.filter(customer_id=id)
+#         pet_serializer = PetSerializer(pet, many=True)
+#         return JsonResponse(pet_serializer.data, safe=False) 
 
 @csrf_exempt
 def getallpetApi(request,id=0):
@@ -805,6 +834,35 @@ def getallpetApi(request,id=0):
             "page_size": page_size,  # Number of items per page
             "current_page": current_page  # Current requested page
         }, safe=False)
+
+
+
+@csrf_exempt
+def getcustomerpetsApi(request,id=0):
+        data = json.loads(request.body)
+        current_page = int(data.get("current_page", 1))  # Default to page 1
+        page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+        id = int(data.get("customer_id", 10)) 
+
+        # Fetch all customer records
+        pet = Pet.objects.filter(customer_id=id)
+        total_records = pet.count()
+
+        # Apply pagination
+        paginator = Paginator(pet, page_size)
+        paginated_data = paginator.get_page(current_page)
+
+        # Serialize paginated customer data
+        pet_serializer = PetSerializer(paginated_data, many=True)
+
+        return JsonResponse({
+            "data": pet_serializer.data,  # Customer records
+            "total_records": total_records,  # Total customer count
+            "page_size": page_size,  # Number of items per page
+            "current_page": current_page  # Current requested page
+        }, safe=False)
+
+
 
 @csrf_exempt
 def getservicebyidApi(request,id=0):
