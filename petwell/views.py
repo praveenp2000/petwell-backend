@@ -602,6 +602,33 @@ def getalladoptionApi(request,id=0):
         }, safe=False)
 
 @csrf_exempt
+def getalladoptionbycustomerApi(request,id=0):
+        data = json.loads(request.body)
+        current_page = int(data.get("current_page", 1))  # Default to page 1
+        page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+        customer_id = int(data.get("customer_id", 10))
+
+        # Fetch all customer records
+        adoption = Adoption.objects.filter(customer_id=customer_id)
+        total_records = adoption.count()
+
+        # Apply pagination
+        paginator = Paginator(adoption, page_size)
+        paginated_data = paginator.get_page(current_page)
+
+        # Serialize paginated customer data
+        adoption_serializer = AdoptionSerializer(paginated_data, many=True)
+
+        return JsonResponse({
+            "data": adoption_serializer.data,  # Customer records
+            "total_records": total_records,  # Total customer count
+            "page_size": page_size,  # Number of items per page
+            "current_page": current_page  # Current requested page
+        }, safe=False)
+
+
+
+@csrf_exempt
 def gethealthbyidApi(request,id=0):
     if request.method=='GET':
         health = Health.objects.get(hid=id)

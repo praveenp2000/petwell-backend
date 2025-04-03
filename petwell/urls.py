@@ -48,6 +48,7 @@ urlpatterns = [
     path('editadoption/',views.editadoptionApi), 
     path('getalladoption/',views.getalladoptionApi),
     re_path('getadoptionbyid/([0-9]+)$',views.getadoptionbyidApi),
+    path('getalladoptionbycustomer/',views.getalladoptionbycustomerApi),
 
     path('addbooking/',views.addbookingApi),
     path('editbooking/',views.editbookingApi), 

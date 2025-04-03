@@ -53,6 +53,7 @@ class Adoption(models.Model):
     gender = models.CharField(max_length=300)
     adopted = models.BooleanField(default=False)
     phone = models.CharField(max_length=300,null=True)
+    customer_id = models.ForeignKey(Customer,default=1,on_delete=models.DO_NOTHING)
 
 class Booking(models.Model):
     bid = models.AutoField(primary_key=True)    

@@ -111,7 +111,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 class AdoptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Adoption
-        fields = ('aid','breed','animal','color','age','description','image','gender','phone')
+        fields = ('aid','breed','animal','color','age','description','image','gender','phone','customer_id')
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
