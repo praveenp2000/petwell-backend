@@ -86,9 +86,7 @@ urlpatterns = [
     path('addtocart/',views.addToCartApi),
     re_path('getcartbyCustomerId/([0-9]+)$',views.getCartbyCustomeridApi),
     re_path('deletecart/([0-9]+)$',views.deleteCartItemApi),
-
+    path('reportforadmin/',views.getReportForAdminApi),
     
-
-
 
 ]

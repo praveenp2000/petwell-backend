@@ -179,3 +179,11 @@ INSERT INTO petwell_purchase (date, paid, delivery_status, product_id_id, custom
 ('2025-03-17 17:00:00', FALSE, 'Shipped', 8, 4),
 ('2025-03-18 18:00:00', TRUE, 'Delivered', 9, 5),
 ('2025-03-19 19:00:00', FALSE, 'Pending', 10, 5);
+
+
+admin
+id: p@gmail.com
+pass: 12345
+
+id: 1@gmail.com
+pass: 12345

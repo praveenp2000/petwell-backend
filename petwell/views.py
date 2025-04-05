@@ -6,7 +6,7 @@ from django.core.files.storage import default_storage
 from rest_framework.utils import json
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
-from django.db.models import Sum
+from django.db.models import Sum,F
 import json
 
 from petwell.models import Cart,Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
@@ -1002,3 +1002,27 @@ def addpurchaseApi(request,id=0):
                 return JsonResponse("Added successfully", safe=False)
         else:
             return JsonResponse("Not a valid serializer",safe=False)
+
+
+@csrf_exempt
+def getReportForAdminApi(request):
+    bookings = Booking.objects.all().count()
+    sales = Purchase.objects.all().count()
+    sallers = Seller.objects.all().count()
+    health = Health.objects.all().count()
+    customers = Customer.objects.all().count()
+    seller_revenue = (
+        Purchase.objects.filter(payed=True)
+        .values(seller_name=F('product_id__seller_id__name'))  # group by seller name
+        .annotate(total_revenue=Sum(F('product_id__price') * F('quantity')))
+    )
+    sellerList = list(seller_revenue)
+    
+    return JsonResponse({
+        "bookings": bookings,
+        "sales": sales,
+        "sellers": sallers,
+        "health": health,
+        "seller_revenue": sellerList,
+        "customers": customers
+    })
