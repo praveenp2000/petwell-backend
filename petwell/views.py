@@ -612,8 +612,6 @@ def getadoptionbyidApi(request,id=0):
         adoption_serializer = AdoptionSerializer(adoption)
         return JsonResponse(adoption_serializer.data, safe=False) 
 
-# getallpetApi getcustomerpetsApi
-
 @csrf_exempt
 def getalladoptionApi(request,id=0):
         data = json.loads(request.body)
