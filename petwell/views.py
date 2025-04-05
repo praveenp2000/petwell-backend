@@ -9,9 +9,10 @@ from django.core.paginator import Paginator
 from django.db.models import Sum
 import json
 
-from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
+from petwell.models import Cart,Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
 from petwell.serializer import AddHealthSerializer,CustomerLoginSerializer,DoctorLoginSerializer,AdminLoginSerializer,SellerLoginSerializer,ServiceSerializer,AdoptionSerializer,BookingSerializer,HealthSerializer,PetServiceSerializer,SellerSerializer,ProductSerializer,PurchaseSerializer
-from petwell.serializer import CustomerChangePasswordSerializer,AddBookingSerializer,AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
+from petwell.serializer import AddAdoptionSerializer,CustomerChangePasswordSerializer,AddBookingSerializer,AddProductSerializer,CustomerSerializer,DoctorSerializer,AdminSerializer,SellerSerializer,EditCustomerSerializer,EditPetSerializer,EditDoctorSerializer,EditServiceSerializer,EditPetserviceSerializer,EditAdoptionSerializer,EditBookingSerializer,EditHealthSerializer,EditSellerSerializer,EditProductSerializer,EditPurchaseSerializer,PetSerializer
+from petwell.serializer import AddPurchaseSerializer,AddPetSerializer,CartSerializer,AddToCartSerializer
 
 # Create your views here.
 
@@ -223,6 +224,19 @@ def editcustomerApi(request,id=0):
             return JsonResponse("Failed to Update",safe=False)
 
 
+
+@csrf_exempt
+def addpetApi(request,id=0):
+    if request.method=='POST':
+        p_data = JSONParser().parse(request)
+        pet_serializer = AddPetSerializer(data=p_data)
+        if pet_serializer.is_valid():
+            pet_serializer.save()
+            return JsonResponse("Added successfully", safe=False)
+        else:
+            return JsonResponse("Failed to add",safe=False)
+
+
 @csrf_exempt
 def editpetApi(request,id=0):
     if request.method=='PUT':
@@ -294,6 +308,29 @@ def addbookingApi(request,id=0):
         if b_serializer.is_valid():
             b_serializer.save()
             if b_serializer.save():
+                return JsonResponse("Added successfully", safe=False)
+        else:
+            return JsonResponse("Not a valid serializer",safe=False)
+
+
+@csrf_exempt
+def addadoptionApi(request,id=0):
+    if request.method=='POST':
+        serializer = AddAdoptionSerializer(data={
+        "breed":request.POST.get("breed"),
+        "animal":request.POST.get("animal"),
+        "color":request.POST.get("color"),
+        "age":request.POST.get("age"),
+        "description":request.POST.get("description"),
+        "gender":request.POST.get("gender"),
+        "adopted":request.POST.get("adopted"),
+        "phone":request.POST.get("phone"),
+        "customer_id":request.POST.get("customer_id"),
+        "image":request.FILES.get("image"),
+        })
+        if serializer.is_valid():
+            serializer.save()
+            if serializer.save():
                 return JsonResponse("Added successfully", safe=False)
         else:
             return JsonResponse("Not a valid serializer",safe=False)
@@ -584,7 +621,7 @@ def getalladoptionApi(request,id=0):
         page_size = int(data.get("page_size", 10))  # Default to 10 items per page
 
         # Fetch all customer records
-        adoption = Adoption.objects.all()
+        adoption = Adoption.objects.filter(adopted=False)
         total_records = adoption.count()
 
         # Apply pagination
@@ -923,3 +960,45 @@ def getallserviceApi(request,id=0):
             "current_page": current_page  # Current requested page
         }, safe=False)
 
+@csrf_exempt
+def addToCartApi(request,id=0):
+    if request.method=='POST':
+        c_data = JSONParser().parse(request)
+        c_serializer = AddToCartSerializer(data=c_data)
+        if c_serializer.is_valid():
+            c_serializer.save()
+            if c_serializer.save():
+                return JsonResponse("Added successfully", safe=False)
+        else:
+            return JsonResponse("Not a valid serializer",safe=False)
+
+@csrf_exempt
+def getCartbyCustomeridApi(request,id=0):
+    if request.method=='GET':
+        cart = Cart.objects.filter(customer_id=id)
+        cart_serializer = CartSerializer(cart, many=True)
+        return JsonResponse(cart_serializer.data, safe=False)
+
+
+@csrf_exempt
+def deleteCartItemApi(request, cart_id):
+    if request.method == 'DELETE':
+        try:
+            cart_item = Cart.objects.get(cartid=cart_id)
+            cart_item.delete()
+            return JsonResponse('Item deleted successfully',safe=False)
+        except Cart.DoesNotExist:
+            return JsonResponse('Item not found',safe=False)
+
+
+@csrf_exempt
+def addpurchaseApi(request,id=0):
+    if request.method=='POST':
+        c_data = JSONParser().parse(request)
+        c_serializer = AddPurchaseSerializer(data=c_data)
+        if c_serializer.is_valid():
+            c_serializer.save()
+            if c_serializer.save():
+                return JsonResponse("Added successfully", safe=False)
+        else:
+            return JsonResponse("Not a valid serializer",safe=False)

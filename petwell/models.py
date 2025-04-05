@@ -99,8 +99,19 @@ class Product(models.Model):
 
 class Purchase(models.Model):
     purchaseid = models.AutoField(primary_key=True)
-    date = models.DateTimeField()
+    date = models.CharField(max_length=650,null=True)
     payed = models.BooleanField(default=False)
     delivery_status = models.CharField(max_length=300)
+    quantity = models.IntegerField()
     product_id = models.ForeignKey(Product,default=1,on_delete=models.DO_NOTHING)
     customer_id = models.ForeignKey(Customer,default=1,on_delete=models.DO_NOTHING)
+
+
+class Cart(models.Model):
+    cartid = models.AutoField(primary_key=True)
+    product_id = models.ForeignKey(Product,default=1,on_delete=models.DO_NOTHING)
+    name = models.CharField(max_length=300)
+    quantity = models.IntegerField()
+    customer_id = models.ForeignKey(Customer,default=1,on_delete=models.DO_NOTHING)
+    date = models.CharField(max_length=650,null=True)
+    price = models.IntegerField()

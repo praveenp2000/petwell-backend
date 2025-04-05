@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from petwell.models import Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
+from petwell.models import Cart,Customer,Pet,Admin,Product,Purchase,Doctor,Service,Petservice,Adoption,Booking,Health,Seller
 
 class CustomerLoginSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,6 +53,11 @@ class EditPetSerializer(serializers.ModelSerializer):
         model = Pet
         fields = ('name','age','gender','animal','breed','color')
 
+class AddPetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pet
+        fields = ('name','age','gender','animal','breed','color','customer_id')
+
 class EditDoctorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Doctor
@@ -71,7 +76,12 @@ class EditPetserviceSerializer(serializers.ModelSerializer):
 class EditAdoptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Adoption
-        fields = ('breed','animal','color','age','description','image','gender')
+        fields = ('adopted','aid')
+
+class AddAdoptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Adoption
+        fields = ('breed','animal','color','age','description','image','gender','adopted','phone','customer_id')
 
 class EditBookingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -111,7 +121,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 class AdoptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Adoption
-        fields = ('aid','breed','animal','color','age','description','image','gender','phone','customer_id')
+        fields = ('image','aid','breed','animal','color','age','description','gender','phone','customer_id','adopted')
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -156,7 +166,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purchase
-        fields = ('purchaseid','date','payed','delivery_status','product_id','customer_id')      
+        fields = ('purchaseid','date','payed','delivery_status','product_id','customer_id','quantity')      
 
 class PetServiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -167,3 +177,18 @@ class CustomerChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields =('cid','password',)
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields =('product_id','customer_id','date','price','date','quantity','name','cartid')
+
+class AddToCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields =('product_id','customer_id','date','price','quantity','name')
+
+class AddPurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = ('date','payed','delivery_status','quantity','product_id','customer_id')

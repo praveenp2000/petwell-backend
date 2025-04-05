@@ -23,7 +23,7 @@ urlpatterns = [
     path('getallcustomer/',views.getallcustomerApi),
     re_path('getcustomerbyid/([0-9]+)$',views.getcustomerbyidApi),
 
-    # path('addpet/',views.addpetApi),
+    path('addpet/',views.addpetApi),
     path('editpet/',views.editpetApi), 
     path('getallpet/',views.getallpetApi),
     path('getcustomerpets/',views.getcustomerpetsApi),
@@ -44,7 +44,7 @@ urlpatterns = [
     path('getallpetservice/',views.getallpetserviceApi),
     re_path('getpetservicebyid/([0-9]+)$',views.getpetservicebyidApi),
 
-    # path('addadoption/',views.addadoptionApi),
+    path('addadoption/',views.addadoptionApi),
     path('editadoption/',views.editadoptionApi), 
     path('getalladoption/',views.getalladoptionApi),
     re_path('getadoptionbyid/([0-9]+)$',views.getadoptionbyidApi),
@@ -78,8 +78,17 @@ urlpatterns = [
     re_path('getproductbysellerid/([0-9]+)$',views.getproductbysellerApi),
     path('getapprovedproduct/',views.getapprovedproductApi),
     
-    # path('addpurchase/',views.addpurchaseApi),
+    path('addpurchase/',views.addpurchaseApi),
     path('editpurchase/',views.editpurchaseApi), 
     path('getallpurchase/',views.getallpurchaseApi),
     re_path('getpurchasebyid/([0-9]+)$',views.getpurchasebyidApi),
+
+    path('addtocart/',views.addToCartApi),
+    re_path('getcartbyCustomerId/([0-9]+)$',views.getCartbyCustomeridApi),
+    re_path('deletecart/([0-9]+)$',views.deleteCartItemApi),
+
+    
+
+
+
 ]
