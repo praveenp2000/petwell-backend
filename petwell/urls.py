@@ -82,11 +82,15 @@ urlpatterns = [
     path('editpurchase/',views.editpurchaseApi), 
     path('getallpurchase/',views.getallpurchaseApi),
     re_path('getpurchasebyid/([0-9]+)$',views.getpurchasebyidApi),
+    path('cancelpurchase/',views.cancel_purchase),
+    
 
     path('addtocart/',views.addToCartApi),
     re_path('getcartbyCustomerId/([0-9]+)$',views.getCartbyCustomeridApi),
     re_path('deletecart/([0-9]+)$',views.deleteCartItemApi),
     path('reportforadmin/',views.getReportForAdminApi),
+
+
     
 
 ]

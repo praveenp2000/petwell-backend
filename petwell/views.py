@@ -1024,3 +1024,20 @@ def getReportForAdminApi(request):
         "seller_revenue": sellerList,
         "customers": customers
     })
+
+@csrf_exempt
+def cancel_purchase(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        purchase_id = data.get('purchaseid')
+
+        if not purchase_id:
+            return JsonResponse({'error': 'Purchase ID is required'}, status=400)
+
+        purchase = Purchase.objects.get(purchaseid=purchase_id)
+        purchase.delivery_status = 'Cancelled'
+        purchase.save()
+
+        return JsonResponse({'message': 'Purchase status updated to Cancelled'}, status=200)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
