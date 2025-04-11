@@ -828,6 +828,32 @@ def getpurchasebyidApi(request,id=0):
 
 
 @csrf_exempt
+def getallpurchasecustApi(request,id=0):
+        data = json.loads(request.body)
+        current_page = int(data.get("current_page", 1))  # Default to page 1
+        page_size = int(data.get("page_size", 10))  # Default to 10 items per page
+        cid= int(data.get("cid", 10))
+
+        # Fetch all customer records
+        purchase = Purchase.objects.filter(customer_id=cid)
+        total_records = purchase.count()
+
+        # Apply pagination
+        paginator = Paginator(purchase, page_size)
+        paginated_data = paginator.get_page(current_page)
+
+        # Serialize paginated customer data
+        purchase_serializer = PurchaseSerializer(paginated_data, many=True)
+
+        return JsonResponse({
+            "data": purchase_serializer.data,  # Customer records
+            "total_records": total_records,  # Total customer count
+            "page_size": page_size,  # Number of items per page
+            "current_page": current_page  # Current requested page
+        }, safe=False)
+
+
+@csrf_exempt
 def getallpurchaseApi(request,id=0):
         data = json.loads(request.body)
         current_page = int(data.get("current_page", 1))  # Default to page 1

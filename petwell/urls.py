@@ -83,6 +83,7 @@ urlpatterns = [
     path('getallpurchase/',views.getallpurchaseApi),
     re_path('getpurchasebyid/([0-9]+)$',views.getpurchasebyidApi),
     path('cancelpurchase/',views.cancel_purchase),
+    path('getallpurchasecust/',views.getallpurchasecustApi),
     
 
     path('addtocart/',views.addToCartApi),
